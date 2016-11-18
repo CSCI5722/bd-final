@@ -2,7 +2,7 @@ function output = RecognizeCharacters()
 %TwoPassAlgorithm
 % First pass to detect boundaries of letters
 % Second pass to label letters
-image = imread('sentence.jpg');
+image = imread('image.jpg');
 originalImage = image;
 %image =  double(image);
 image = rgb2gray(image);
@@ -93,7 +93,7 @@ for m = 1:1:height
             end
             %find extensions like dot on any character
             check1 = any(dots==val);
-            for c = indexMaxY:1:indexMaxY+15 % range to search for dot above
+            for c = indexMaxY:1:indexMaxY+12 % RANGE to search for dot above. if letter are closer manually change this or else labels will be wrong
                 for d = indexMinX:1:indexMaxX
                     check2 = any(dots==ConnectedList(c,d));
                     if(ConnectedList(c,d) ~= 0 && ConnectedList(c,d) ~= val)
@@ -117,6 +117,7 @@ figure
 imshow(originalImage);
 hold on;
 [row,col] = size(minVector);
+LetterCoords = [];
 % all non two part character label
 for d=1:1:row
     checkDots = any(dots==numberVector(d,1));
@@ -126,6 +127,7 @@ for d=1:1:row
          PosX = minVector(d,2);
          PosY = minVector(d,1); 
          r = rectangle('position',[PosX PosY widthOfX heightOfX],'LineWidth',1);
+         LetterCoords = vertcat(LetterCoords,minVector(d,:));
          set(r,'edgecolor','red');
     end  
 end
@@ -137,20 +139,32 @@ for c=1:2:lenDots
          widthOfX1 = minVector(r2,4) - minVector(r2,2);
          widthOfX2 = minVector(r1,4) - minVector(r1,2);
          widthOfX = 0;
+         xMax = 0;
          if(widthOfX1 > widthOfX2)
              widthOfX = widthOfX1;
-         else 
+             xMax = minVector(r2,4);
+         else
              widthOfX = widthOfX2;
+             xMax = minVector(r1,4);
          end
          heightOfX = minVector(r2,3) - minVector(r1,1);
-         PosX = minVector(r2,2);
+         yMax = minVector(r2,3);
+         PosX1 = minVector(r2,2);
+         PosX2 = minVector(r1,2);
+         PosX = 0;
+         if PosX1 < PosX2
+            PosX = PosX1;
+         else
+            PosX = PosX2;
+         end
          PosY = minVector(r1,1); 
          r = rectangle('position',[PosX PosY widthOfX heightOfX],'LineWidth',1);
+         LetterCoords = vertcat(LetterCoords,[PosY PosX  yMax  xMax]);
          set(r,'edgecolor','red'); 
 end
-%disp(numberVector);
-%disp(minVector);
-%disp(dots);
 [r,c] = size(dots());
-output = (size(numberVector) - (r/2)); % should tell characters of image 
+plot(LetterCoords(39,2),LetterCoords(39,1),'r+', 'MarkerSize', 10);
+plot(LetterCoords(39,4),LetterCoords(39,3),'r+', 'MarkerSize', 10);
+disp(size(LetterCoords)) % count of every label;
+output = LetterCoords; % output is set of MinY MinX YMax XMax - these points can be used to extract each pixel box(use meshgrid maybe) to compare to letter image
 end
