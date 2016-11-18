@@ -163,8 +163,8 @@ for c=1:2:lenDots
          set(r,'edgecolor','red'); 
 end
 [r,c] = size(dots());
-plot(LetterCoords(39,2),LetterCoords(39,1),'r+', 'MarkerSize', 10);
-plot(LetterCoords(39,4),LetterCoords(39,3),'r+', 'MarkerSize', 10);
+%plot(LetterCoords(39,2),LetterCoords(39,1),'r+', 'MarkerSize', 10);
+%plot(LetterCoords(39,4),LetterCoords(39,3),'r+', 'MarkerSize', 10);
 disp(size(LetterCoords)) % count of every label;
 output = LetterCoords; % output is set of MinY MinX YMax XMax - these points can be used to extract each pixel box(use meshgrid maybe) to compare to letter image
 end
